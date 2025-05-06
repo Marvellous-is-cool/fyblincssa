@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminDb, adminAuth } from "@/lib/firebase-admin";
 import { v2 as cloudinary } from "cloudinary";
+import sharp from "sharp";
 
 // Configure Cloudinary with explicit values and increased timeout
 cloudinary.config({
@@ -68,9 +69,37 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check dataUrl size for debugging
-    const approxSizeInMB = (cardDataUrl.length * 0.75) / 1024 / 1024;
-    console.log(`Approximate image size: ${approxSizeInMB.toFixed(2)} MB`);
+    // Check if we need to optimize the image by extracting base64 data
+    let optimizedDataUrl;
+    if (cardDataUrl.length > 1000000) {
+      // Over 1MB
+      try {
+        // Extract base64 data from data URL
+        const base64Data = cardDataUrl.split(",")[1];
+        const buffer = Buffer.from(base64Data, "base64");
+
+        // Optimize with sharp - preserve aspect ratio
+        const optimizedBuffer = await sharp(buffer)
+          .resize({
+            width: 1080,
+            height: 1920,
+            fit: "contain",
+            background: { r: 255, g: 255, b: 255, alpha: 1 },
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 85, progressive: true })
+          .toBuffer();
+
+        // Reconstruct data URL with optimized image
+        const optimizedBase64 = optimizedBuffer.toString("base64");
+        optimizedDataUrl = `data:image/jpeg;base64,${optimizedBase64}`;
+      } catch (optimizeError) {
+        console.error("Card optimization error:", optimizeError);
+        optimizedDataUrl = cardDataUrl; // Fall back to original
+      }
+    } else {
+      optimizedDataUrl = cardDataUrl;
+    }
 
     // Implement upload with retry logic and better error handling
     let uploadResult;
@@ -90,7 +119,7 @@ export async function POST(request: Request) {
           }, 60000);
 
           cloudinary.uploader.upload(
-            cardDataUrl,
+            optimizedDataUrl,
             {
               folder: "lincssa/personality-cards",
               resource_type: "image",
@@ -99,9 +128,9 @@ export async function POST(request: Request) {
               quality: "auto",
               fetch_format: "auto",
               flags: "lossy",
-              // Set smaller dimensions if the image is too large
+              // Ensure proper aspect ratio scaling
               transformation: [
-                { width: 1080, crop: "limit" },
+                { width: 1080, height: 1920, crop: "fit" },
                 { quality: "auto" },
               ],
             },

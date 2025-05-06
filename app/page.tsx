@@ -196,16 +196,21 @@ export default function Home() {
                   ease: "easeInOut",
                 }}
               >
-                <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-lincssa-blue to-primary aspect-[3/4]">
+                <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-lincssa-blue to-primary">
                   {/* Display the card image if available */}
                   {featuredStudent && featuredStudent.cardImageURL ? (
-                    <img
-                      src={featuredStudent.cardImageURL}
-                      alt={`${featuredStudent.fullName} Card`}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="aspect-[9/16] flex items-center justify-center">
+                      <img
+                        src={featuredStudent.cardImageURL.replace(
+                          "/upload/",
+                          "/upload/c_scale,w_800,q_auto/"
+                        )}
+                        alt={`${featuredStudent.fullName} Card`}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   ) : (
-                    <>
+                    <div className="aspect-[9/16]">
                       <div className="absolute inset-0 bg-black/20"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
                         <div className="flex items-center gap-3 mb-3">
@@ -229,7 +234,7 @@ export default function Home() {
                             : `"The future belongs to those who believe in the beauty of their dreams."`}
                         </p>
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </motion.div>

@@ -4,7 +4,6 @@ import { Timestamp } from "firebase-admin/firestore";
 
 export async function POST(request: Request) {
   try {
-    console.log("Processing registration via API route");
     const data = await request.json();
 
     // Validate required fields
@@ -17,7 +16,6 @@ export async function POST(request: Request) {
 
     // Verify Firebase Admin is initialized correctly
     if (!adminDb || typeof adminDb.collection !== "function") {
-      console.error("Firebase Admin not properly initialized");
       return NextResponse.json(
         { error: "Server configuration error. Please try again later." },
         { status: 500 }

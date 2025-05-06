@@ -273,8 +273,9 @@ export default function PersonalityCard({
           ref={cardRef}
           className="personality-card-export"
           style={{
-            width: "1080px", // Fixed size for consistent exports
-            height: "1920px",
+            width: "1080px", // Fixed width for consistent exports
+            height: "1920px", // 9:16 aspect ratio (common for social media)
+            overflow: "hidden",
           }}
         >
           <TemplateComponent
@@ -294,13 +295,17 @@ export default function PersonalityCard({
           transition={{ duration: 0.5 }}
           className="card-preview relative overflow-hidden rounded-2xl shadow-2xl mx-auto group cursor-pointer"
           style={{
-            width: "270px", // 1080px / 4 = 270px
-            height: "480px", // 1920px / 4 = 480px
+            width: "270px", // 1080px / 4 = 270px for preview
+            height: "480px", // 1920px / 4 = 480px for preview
             backgroundColor: dominantColors[3] || "#ffffff",
-            transform: "rotate(-3deg)", // Add slant effect to the card
+            transform: "rotate(-3deg)",
             transformOrigin: "center center",
             boxShadow:
               "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          }}
+          whileHover={{
+            transform: "rotate(0deg) scale(1.05)",
+            transition: { duration: 0.3 },
           }}
           onClick={() => setShowPreviewModal(true)}
         >
@@ -310,13 +315,6 @@ export default function PersonalityCard({
             logoUrl={actualLogoUrl}
             branding={branding}
           />
-
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
-            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full">
-              <FiMaximize className="w-6 h-6 text-white" />
-            </div>
-          </div>
         </motion.div>
       </div>
 
