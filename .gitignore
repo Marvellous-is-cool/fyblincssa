@@ -39,6 +39,11 @@ firebase-debug.log
 .firebase/
 firebase-adminsdk-*.json
 
+# Firebase Admin SDK Service Account
+fyblinc-firebase-adminsdk-fbsvc-c2908b3fdc.json
+*-firebase-adminsdk-*.json
+*firebase-adminsdk*.json
+
 # Cloudinary
 cloudinary-config.json
 
@@ -56,6 +61,3 @@ cloudinary-config.json
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# firestore key
-.fyblinc-firebase-adminsdk-fbsvc-c2908b3fdc.json
