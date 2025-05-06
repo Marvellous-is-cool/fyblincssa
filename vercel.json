@@ -44,6 +44,7 @@
     "FIREBASE_ADMIN_STORAGE_BUCKET": "@firebase_admin_storage_bucket"
   },
   "images": {
+    "sizes": [256, 512, 1024, 2048],
     "domains": [
       "res.cloudinary.com",
       "storage.googleapis.com",
