@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   images: {
-    domains: ["firebasestorage.googleapis.com", "images.unsplash.com"],
+    domains: ["res.cloudinary.com"],
   },
   // Environment variables
   env: {
@@ -18,7 +17,7 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID:
-      process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || "",
   },
 };
 

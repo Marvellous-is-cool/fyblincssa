@@ -9,6 +9,9 @@ cloudinary.config({
   secure: true,
 });
 
+// Use the new route segment config format instead of the deprecated export const config
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -59,9 +62,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
