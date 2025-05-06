@@ -3,12 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm install",
-  "functions": {
-    "api/**/*": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
   "images": {
     "sizes": [256, 512, 1024, 2048],
     "domains": ["res.cloudinary.com", "firebasestorage.googleapis.com"]
