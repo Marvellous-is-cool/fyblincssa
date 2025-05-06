@@ -15,6 +15,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Verify Firebase Admin is initialized correctly
+    if (!adminDb || typeof adminDb.collection !== "function") {
+      console.error("Firebase Admin not properly initialized");
+      return NextResponse.json(
+        { error: "Server configuration error. Please try again later." },
+        { status: 500 }
+      );
+    }
+
     // Format matric number for document ID (replace slashes with hyphens)
     const formattedMatricNumber = data.matricNumber.replace(/\//g, "-");
 
