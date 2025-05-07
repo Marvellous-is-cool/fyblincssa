@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "node ./scripts/check-sharp.js"
   },
   "dependencies": {
     "@lottiefiles/react-lottie-player": "^3.5.3",
@@ -44,5 +45,8 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.0.4",
     "typescript": "^5.3.3"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.5"
   }
 }

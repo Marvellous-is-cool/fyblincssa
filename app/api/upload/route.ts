@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import sharp from "sharp";
 
 // Configure Cloudinary with your credentials
 cloudinary.config({
@@ -13,6 +12,17 @@ cloudinary.config({
 // Use the new route segment config format instead of the deprecated export const config
 export const runtime = "nodejs";
 
+// Load sharp conditionally to avoid runtime errors
+let sharpModule: any = null;
+try {
+  sharpModule = require("sharp");
+  console.log("Sharp module loaded successfully");
+} catch (err) {
+  const errorMessage = err instanceof Error ? err.message : String(err);
+  console.warn("Sharp module failed to load:", errorMessage);
+  console.warn("Image optimization will be disabled");
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
@@ -24,52 +34,61 @@ export async function POST(request: Request) {
 
     // Convert file to buffer
     const originalBuffer = Buffer.from(await file.arrayBuffer());
+    let uploadBuffer = originalBuffer;
 
-    // Optimize image with sharp
-    let optimizedBuffer;
-    try {
-      // Process with sharp - resize to reasonable dimensions and compress
-      optimizedBuffer = await sharp(originalBuffer)
-        .resize({
-          width: 1200,
-          height: 1200,
-          fit: "inside",
-          withoutEnlargement: true,
-        })
-        .jpeg({ quality: 80, progressive: true })
-        .toBuffer();
-
-      // If optimization reduced size significantly, use the optimized version
-      if (optimizedBuffer.length < originalBuffer.length) {
-        console.log(
-          `Image optimized: ${originalBuffer.length} → ${optimizedBuffer.length} bytes`
-        );
-      } else {
-        // If optimization didn't help, try more aggressive compression
-        optimizedBuffer = await sharp(originalBuffer)
+    // Only use sharp if it loaded successfully
+    if (sharpModule) {
+      try {
+        // Process with sharp - resize to reasonable dimensions and compress
+        const optimizedBuffer = await sharpModule(originalBuffer)
           .resize({
-            width: 800,
-            height: 800,
+            width: 1200,
+            height: 1200,
             fit: "inside",
             withoutEnlargement: true,
           })
-          .jpeg({ quality: 70, progressive: true })
+          .jpeg({ quality: 80, progressive: true })
           .toBuffer();
+
+        // If optimization reduced size significantly, use the optimized version
+        if (optimizedBuffer.length < originalBuffer.length) {
+          console.log(
+            `Image optimized: ${originalBuffer.length} → ${optimizedBuffer.length} bytes`
+          );
+          uploadBuffer = optimizedBuffer;
+        } else {
+          // If optimization didn't help, try more aggressive compression
+          const moreOptimizedBuffer = await sharpModule(originalBuffer)
+            .resize({
+              width: 800,
+              height: 800,
+              fit: "inside",
+              withoutEnlargement: true,
+            })
+            .jpeg({ quality: 70, progressive: true })
+            .toBuffer();
+
+          uploadBuffer = moreOptimizedBuffer;
+        }
+      } catch (sharpError) {
+        console.error("Image optimization failed:", sharpError);
+        // If sharp fails, continue with original buffer
+        uploadBuffer = originalBuffer;
       }
-    } catch (sharpError) {
-      console.error("Image optimization failed:", sharpError);
-      // If sharp fails, continue with original buffer
-      optimizedBuffer = originalBuffer;
+    } else {
+      console.log(
+        "Using original image (Sharp not available for optimization)"
+      );
     }
 
-    // Handle Upload
+    // Handle Upload - rely on Cloudinary's built-in optimization when Sharp isn't available
     const uploadResponse = await new Promise((resolve, reject) => {
       // Create upload stream using buffer
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: "fyb_students",
           resource_type: "image",
-          // Add transformations to further optimize on Cloudinary
+          // Add transformations to optimize on Cloudinary
           transformation: [
             { width: 800, crop: "limit" },
             { quality: "auto:good" },
@@ -85,7 +104,7 @@ export async function POST(request: Request) {
       // Convert buffer to stream and pipe to uploadStream
       const Readable = require("stream").Readable;
       const readableStream = new Readable();
-      readableStream.push(optimizedBuffer);
+      readableStream.push(uploadBuffer);
       readableStream.push(null);
       readableStream.pipe(uploadStream);
     });

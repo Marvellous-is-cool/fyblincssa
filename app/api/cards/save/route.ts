@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminDb, adminAuth } from "@/lib/firebase-admin";
 import { v2 as cloudinary } from "cloudinary";
-import sharp from "sharp";
 
 // Configure Cloudinary with explicit values and increased timeout
 cloudinary.config({
@@ -11,6 +10,19 @@ cloudinary.config({
   secure: true,
   timeout: 120000, // Increase timeout to 120 seconds (2 minutes)
 });
+
+// Load sharp conditionally to avoid runtime errors
+let sharpModule: any = null;
+try {
+  sharpModule = require("sharp");
+  console.log("Sharp module loaded successfully");
+} catch (err) {
+  console.warn(
+    "Sharp module failed to load:",
+    err instanceof Error ? err.message : String(err)
+  );
+  console.warn("Image optimization will be disabled");
+}
 
 export async function POST(request: Request) {
   try {
@@ -69,17 +81,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if we need to optimize the image by extracting base64 data
-    let optimizedDataUrl;
-    if (cardDataUrl.length > 1000000) {
-      // Over 1MB
+    // Prepare the image for upload
+    let optimizedDataUrl = cardDataUrl;
+
+    // Only use Sharp for optimization if it's available and the image is large
+    if (sharpModule && cardDataUrl.length > 1000000) {
       try {
         // Extract base64 data from data URL
         const base64Data = cardDataUrl.split(",")[1];
         const buffer = Buffer.from(base64Data, "base64");
 
         // Optimize with sharp - preserve aspect ratio
-        const optimizedBuffer = await sharp(buffer)
+        const optimizedBuffer = await sharpModule(buffer)
           .resize({
             width: 1080,
             height: 1920,
@@ -93,12 +106,15 @@ export async function POST(request: Request) {
         // Reconstruct data URL with optimized image
         const optimizedBase64 = optimizedBuffer.toString("base64");
         optimizedDataUrl = `data:image/jpeg;base64,${optimizedBase64}`;
+        console.log("Image optimized with Sharp");
       } catch (optimizeError) {
-        console.error("Card optimization error:", optimizeError);
-        optimizedDataUrl = cardDataUrl; // Fall back to original
+        console.error("Card optimization error with Sharp:", optimizeError);
+        // Keep the original data URL if optimization fails
       }
     } else {
-      optimizedDataUrl = cardDataUrl;
+      console.log(
+        "Using original image (Sharp not available or image small enough)"
+      );
     }
 
     // Implement upload with retry logic and better error handling
@@ -124,7 +140,7 @@ export async function POST(request: Request) {
               folder: "lincssa/personality-cards",
               resource_type: "image",
               public_id: `${studentId}-card-${Date.now()}`,
-              // Add optimization options
+              // Add optimization options for Cloudinary to handle
               quality: "auto",
               fetch_format: "auto",
               flags: "lossy",
