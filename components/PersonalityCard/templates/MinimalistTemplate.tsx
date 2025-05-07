@@ -163,7 +163,9 @@ export default function MinimalistTemplate({
           className="flex items-center gap-4 mb-28"
         >
           <span className="text-3xl font-light text-gray-500">
-            {student?.level || "400"} Level
+            {student?.birthMonth && student?.birthDay
+              ? `${student.birthMonth} ${student.birthDay}`
+              : "Birth Month & Day"}
           </span>
           <motion.div
             initial={{ width: 0 }}
@@ -227,6 +229,44 @@ export default function MinimalistTemplate({
                 </span>
               </motion.div>
             )}
+
+            {/* relationship Status with minimalist style */}
+            {student?.relationshipStatus && (
+              <motion.div
+                variants={itemVariants}
+                className="mt-6 flex items-center gap-3"
+              >
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "32px" }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  className="h-[1px]"
+                  style={{ backgroundColor: primaryColor }}
+                ></motion.div>
+                <span className="text-xl text-gray-400 tracking-wide">
+                  {student.relationshipStatus}
+                </span>
+              </motion.div>
+            )}
+
+            {/* socials with minimalist style */}
+            {student?.socials && (
+              <motion.div
+                variants={itemVariants}
+                className="mt-6 flex items-center gap-3"
+              >
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "32px" }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                  className="h-[1px]"
+                  style={{ backgroundColor: primaryColor }}
+                ></motion.div>
+                <span className="text-xl text-gray-400 tracking-wide">
+                  {student.socials}
+                </span>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Right column with details */}
@@ -265,6 +305,71 @@ export default function MinimalistTemplate({
               </motion.div>
             )}
 
+            {/* if not linguistics */}
+            {student?.ifNotLinguistics && (
+              <motion.div variants={itemVariants} className="mb-16">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "24px" }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="h-[1px] mb-6"
+                  style={{ backgroundColor: secondaryColor }}
+                ></motion.div>
+                <h3
+                  className="text-xl uppercase tracking-widest mb-6 font-medium"
+                  style={{ color: secondaryColor }}
+                >
+                  If not Linguistics
+                </h3>
+                <p className="text-2xl text-gray-600 leading-relaxed">
+                  {student.ifNotLinguistics}
+                </p>
+              </motion.div>
+            )}
+            {/* Favorite Level*/}
+            {student?.favoriteLevel && (
+              <motion.div variants={itemVariants} className="mb-16">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "24px" }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="h-[1px] mb-6"
+                  style={{ backgroundColor: secondaryColor }}
+                ></motion.div>
+                <h3
+                  className="text-xl uppercase tracking-widest mb-6 font-medium"
+                  style={{ color: secondaryColor }}
+                >
+                  Favorite Level
+                </h3>
+                <p className="text-2xl text-gray-600 leading-relaxed">
+                  {student.favoriteLevel}
+                </p>
+              </motion.div>
+            )}
+
+            {/* Shege Level*/}
+            {student?.shegeLevel && (
+              <motion.div variants={itemVariants} className="mb-16">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "24px" }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="h-[1px] mb-6"
+                  style={{ backgroundColor: secondaryColor }}
+                ></motion.div>
+                <h3
+                  className="text-xl uppercase tracking-widest mb-6 font-medium"
+                  style={{ color: secondaryColor }}
+                >
+                  Shege Level
+                </h3>
+                <p className="text-2xl text-gray-600 leading-relaxed">
+                  {student.shegeLevel}
+                </p>
+              </motion.div>
+            )}
+
             {/* Additional section with hobbies */}
             {student?.hobbies && (
               <motion.div variants={itemVariants} className="mb-16">
@@ -287,13 +392,35 @@ export default function MinimalistTemplate({
               </motion.div>
             )}
 
+            {/* Additional section with advice */}
+            {student?.advice && (
+              <motion.div variants={itemVariants} className="mb-16">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "24px" }}
+                  transition={{ duration: 0.8, delay: 1.1 }}
+                  className="h-[1px] mb-6"
+                  style={{ backgroundColor: accentColor }}
+                ></motion.div>
+                <h3
+                  className="text-xl uppercase tracking-widest mb-6 font-medium"
+                  style={{ color: accentColor }}
+                >
+                  Advice for Younger Level
+                </h3>
+                <p className="text-xl text-gray-600 leading-relaxed">
+                  {student.advice}
+                </p>
+              </motion.div>
+            )}
+
             {/* Bottom section with additional details */}
             <motion.div variants={itemVariants} className="mt-auto">
               <div className="grid grid-cols-3 gap-8">
                 {student?.specializationTrack && (
                   <div>
                     <p className="text-sm text-gray-400 uppercase tracking-widest mb-2">
-                      Track
+                      I think i am better in
                     </p>
                     <p className="text-lg text-gray-700">
                       {student.specializationTrack}
@@ -321,6 +448,43 @@ export default function MinimalistTemplate({
                       {student.bestMoment.length > 40
                         ? student.bestMoment.substring(0, 40) + "..."
                         : student.bestMoment}
+                    </p>
+                  </div>
+                )}
+
+                {student?.favoriteColor && (
+                  <div>
+                    <p className="text-sm text-gray-400 uppercase tracking-widest mb-2">
+                      Favorite Color
+                    </p>
+                    <p className="text-lg text-gray-700">
+                      {student.favoriteColor.length > 40
+                        ? student.favoriteColor.substring(0, 40) + "..."
+                        : student.favoriteColor}
+                    </p>
+                  </div>
+                )}
+
+                {student?.shegeCourse && (
+                  <div>
+                    <p className="text-sm text-gray-400 uppercase tracking-widest mb-2">
+                      Shege Course
+                    </p>
+                    <p className="text-lg text-gray-700">
+                      {student.shegeCourse}
+                    </p>
+                  </div>
+                )}
+
+                {student?.worstMoment && (
+                  <div>
+                    <p className="text-sm text-gray-400 uppercase tracking-widest mb-2">
+                      Worst Moment
+                    </p>
+                    <p className="text-lg text-gray-700">
+                      {student.worstMoment.length > 40
+                        ? student.worstMoment.substring(0, 40) + "..."
+                        : student.worstMoment}
                     </p>
                   </div>
                 )}

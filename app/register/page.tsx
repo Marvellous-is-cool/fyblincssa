@@ -37,15 +37,13 @@ export default function Registration() {
     quote: "",
     bio: "",
     hobbies: "",
-    achievements: "",
     email: "",
-    phone: "",
     // New fields
     birthMonth: "",
     birthDay: "",
     relationshipStatus: "",
     socials: "",
-    specializationTrack: "Linguistics", // "Linguistics", "Communication", "Both"
+    partTract: "Linguistics", // "Linguistics", "Communication", "Both"
     favoriteLevel: "",
     shegeLevel: "",
     favoriteCourse: "",
@@ -53,7 +51,6 @@ export default function Registration() {
     worstMoment: "",
     bestMoment: "",
     favoriteLecturer: "",
-    partingWords: "",
     ifNotLinguistics: "",
     favoriteColor: "",
     advice: "",
@@ -281,33 +278,6 @@ export default function Registration() {
                   required
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Level
-                </label>
-                <input
-                  type="text"
-                  name="level"
-                  value={formData.level}
-                  className="w-full p-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
-                  readOnly
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Department
-                </label>
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  className="w-full p-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
-                  readOnly
-                />
-              </div>
             </div>
           </motion.div>
         );
@@ -429,6 +399,8 @@ export default function Registration() {
                 <option value="Complicated">It's Complicated</option>
                 <option value="Married">Married</option>
                 <option value="Private">Rather Not Say</option>
+                <option value="Married">Married</option>
+                <option value="trying">How i wan explain bayi</option>
               </select>
             </div>
 
@@ -448,11 +420,11 @@ export default function Registration() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Specialization Track
+                Which do you like more?
               </label>
               <select
                 name="specializationTrack"
-                value={formData.specializationTrack}
+                value={formData.partTract}
                 onChange={handleChange}
                 className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
               >
@@ -490,10 +462,12 @@ export default function Registration() {
                   className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
                 >
                   <option value="">Select Level</option>
+                  <option value="no Level">No Level</option>
                   <option value="100 Level">100 Level</option>
                   <option value="200 Level">200 Level</option>
                   <option value="300 Level">300 Level</option>
                   <option value="400 Level">400 Level</option>
+                  <option value="all Level">All Level</option>
                 </select>
               </div>
               <div>
@@ -507,10 +481,12 @@ export default function Registration() {
                   className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
                 >
                   <option value="">Select Level</option>
+                  <option value="no Level">No Level</option>
                   <option value="100 Level">100 Level</option>
                   <option value="200 Level">200 Level</option>
                   <option value="300 Level">300 Level</option>
                   <option value="400 Level">400 Level</option>
+                  <option value="all Level">All Level</option>
                 </select>
               </div>
             </div>
@@ -653,34 +629,6 @@ export default function Registration() {
                 placeholder="What advice would you give to upcoming students?"
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Parting Words
-              </label>
-              <textarea
-                name="partingWords"
-                value={formData.partingWords}
-                onChange={handleChange}
-                rows={3}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
-                placeholder="Any final message as you graduate?"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notable Achievements
-              </label>
-              <textarea
-                name="achievements"
-                value={formData.achievements}
-                onChange={handleChange}
-                rows={3}
-                className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
-                placeholder="List your notable achievements"
-              />
-            </div>
           </motion.div>
         );
 
@@ -758,19 +706,6 @@ export default function Registration() {
                   required
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
-                  placeholder="Enter your phone number"
-                />
-              </div>
             </div>
           </motion.div>
         );
@@ -842,9 +777,6 @@ export default function Registration() {
                       <h3 className="text-2xl font-bold text-lincssa-blue">
                         {formData.fullName}
                       </h3>
-                      <p className="text-gray-600">
-                        {formData.level} Level • {formData.department}
-                      </p>
                     </div>
 
                     <div>
@@ -868,15 +800,6 @@ export default function Registration() {
                       </div>
                     )}
 
-                    {formData.achievements && (
-                      <div>
-                        <h4 className="font-semibold text-gray-700">
-                          Achievements
-                        </h4>
-                        <p className="text-gray-600">{formData.achievements}</p>
-                      </div>
-                    )}
-
                     <div className="pt-4">
                       <h4 className="font-semibold text-gray-700">
                         Contact Information
@@ -886,9 +809,6 @@ export default function Registration() {
                       </p>
                       {formData.email && (
                         <p className="text-gray-600">Email: {formData.email}</p>
-                      )}
-                      {formData.phone && (
-                        <p className="text-gray-600">Phone: {formData.phone}</p>
                       )}
                     </div>
                   </div>

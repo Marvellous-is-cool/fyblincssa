@@ -101,8 +101,8 @@ export default function RegistrationSuccess() {
             <p className="text-gray-600">
               The LINCSSA team will review all submissions and select the
               Personality of the Week. If chosen, your profile will be featured
-              on our platforms and a beautiful card will be created to celebrate
-              your achievement.
+              on our platforms and a beautiful card will be created to showcase
+              you when the committee decides.
             </p>
           </motion.div>
 

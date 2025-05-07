@@ -77,13 +77,12 @@ export default function Home() {
     {
       icon: <FiUser className="h-8 w-8 text-primary" />,
       title: "Student Showcase",
-      description:
-        "Highlight your achievements and personality to the LINCSSA community",
+      description: "Highlight your personality to the LINCSSA community",
     },
     {
       icon: <FiAward className="h-8 w-8 text-secondary" />,
       title: "Personality of the Week",
-      description: "Get featured as the department's personality of the week",
+      description: "Get featured as the department's personality of the day",
     },
     {
       icon: <FiStar className="h-8 w-8 text-lincssa-gold" />,
@@ -219,7 +218,7 @@ export default function Home() {
                           </div>
                           <div>
                             <p className="text-sm text-lincssa-gold">
-                              PERSONALITY OF THE WEEK
+                              PERSONALITY OF THE DAY
                             </p>
                             <h3 className="text-xl font-bold">
                               {featuredStudent

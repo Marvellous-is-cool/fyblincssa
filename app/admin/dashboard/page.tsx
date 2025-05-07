@@ -705,17 +705,6 @@ export default function AdminDashboard() {
                         </p>
                       </div>
                     )}
-
-                    {selectedStudent.achievements && (
-                      <div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
-                          Achievements
-                        </h3>
-                        <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-                          {selectedStudent.achievements}
-                        </p>
-                      </div>
-                    )}
                   </div>
 
                   <div className="mt-8 flex flex-col sm:flex-row justify-end gap-4">

@@ -377,41 +377,12 @@ export default function StudentProfile() {
                       className="text-2xl font-bold text-gray-900 w-full border-b-2 border-gray-200 focus:border-primary px-2 py-1 outline-none text-black"
                       placeholder="Your Name"
                     />
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <div className="flex-1">
-                        <label className="text-sm text-gray-500 block mb-1">
-                          Level
-                        </label>
-                        <input
-                          type="text"
-                          name="level"
-                          value={editedData.level}
-                          onChange={handleChange}
-                          className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-primary outline-none text-black"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <label className="text-sm text-gray-500 block mb-1">
-                          Department
-                        </label>
-                        <input
-                          type="text"
-                          name="department"
-                          value={editedData.department}
-                          onChange={handleChange}
-                          className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-primary outline-none text-black"
-                        />
-                      </div>
-                    </div>
                   </div>
                 ) : (
                   <>
                     <h1 className="text-3xl font-bold text-gray-900">
                       {studentData.fullName}
                     </h1>
-                    <p className="text-gray-600 mt-1">
-                      {studentData.level} Level • {studentData.department}
-                    </p>
                   </>
                 )}
 
@@ -529,27 +500,6 @@ export default function StudentProfile() {
                     </p>
                   )}
                 </div>
-
-                {/* Achievements Section */}
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Achievements
-                  </h2>
-                  {isEditing ? (
-                    <textarea
-                      name="achievements"
-                      value={editedData.achievements || ""}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-primary outline-none text-black"
-                      placeholder="Your notable achievements"
-                    />
-                  ) : (
-                    <p className="text-gray-700">
-                      {studentData.achievements || "No achievements provided"}
-                    </p>
-                  )}
-                </div>
               </div>
 
               {/* Right Column */}
@@ -610,11 +560,11 @@ export default function StudentProfile() {
                   </h2>
                   <div className="space-y-3">
                     <div>
-                      <p className="text-sm text-gray-500">Specialization</p>
+                      <p className="text-sm text-gray-500">Loved Part</p>
                       {isEditing ? (
                         <select
-                          name="specializationTrack"
-                          value={editedData.specializationTrack || ""}
+                          name="partTrack"
+                          value={editedData.partTrack || ""}
                           onChange={handleChange}
                           className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-primary outline-none text-black"
                         >
@@ -624,7 +574,7 @@ export default function StudentProfile() {
                         </select>
                       ) : (
                         <p className="text-gray-700">
-                          {studentData.specializationTrack || "Not specified"}
+                          {studentData.partTrack || "Not specified"}
                         </p>
                       )}
                     </div>

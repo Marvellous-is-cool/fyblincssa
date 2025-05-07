@@ -322,7 +322,7 @@ export default function GenerateCardPage() {
                           <button
                             key={template.id}
                             onClick={() => setSelectedTemplate(template.id)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left ${
+                            className={`p-3 text-black rounded-lg border-2 transition-all text-left ${
                               selectedTemplate === template.id
                                 ? "border-primary bg-primary/5"
                                 : "border-gray-200 hover:border-gray-300"
