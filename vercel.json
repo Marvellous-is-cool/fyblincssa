@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "installCommand": "npm install --platform=linux --arch=x64 sharp && npm install",
   "images": {
     "sizes": [256, 512, 1024, 2048],
     "domains": ["res.cloudinary.com", "firebasestorage.googleapis.com"]
