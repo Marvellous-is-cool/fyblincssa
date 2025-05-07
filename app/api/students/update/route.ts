@@ -24,24 +24,61 @@ export async function PUT(request: Request) {
     // Check authorization
     try {
       const authHeader = request.headers.get("authorization");
+      console.log("Auth header present:", !!authHeader);
 
       if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader.split("Bearer ")[1];
-        const decodedToken = await adminAuth.verifyIdToken(token);
 
-        // Check if this is the student's own record
-        const studentData = studentDoc.data();
-        if (studentData?.uid !== decodedToken.uid) {
+        try {
+          // Add logging for token debugging
+          console.log(
+            "Attempting to verify token:",
+            token.substring(0, 10) + "..."
+          );
+
+          const decodedToken = await adminAuth.verifyIdToken(token);
+          console.log("Token verified, user ID:", decodedToken.uid);
+
+          // Check if this is the student's own record
+          const studentData = studentDoc.data();
+          if (studentData?.uid !== decodedToken.uid) {
+            console.log("Authorization failed: UID mismatch", {
+              tokenUid: decodedToken.uid,
+              studentUid: studentData?.uid,
+            });
+            return NextResponse.json(
+              { error: "Unauthorized to update this profile" },
+              { status: 403 }
+            );
+          }
+
+          console.log("Authorization successful");
+        } catch (tokenError: unknown) {
+          console.error("Token verification failed:", tokenError);
           return NextResponse.json(
-            { error: "Unauthorized to update this profile" },
-            { status: 403 }
+            {
+              error: "Invalid authentication token",
+              details:
+                process.env.NODE_ENV === "development"
+                  ? tokenError instanceof Error
+                    ? tokenError.message
+                    : String(tokenError)
+                  : undefined,
+            },
+            { status: 401 }
           );
         }
       } else {
         // For development
         // In production, always verify auth
         if (process.env.NODE_ENV === "production") {
-          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+          console.log("No valid auth header in production mode");
+          return NextResponse.json(
+            { error: "Authentication required" },
+            { status: 401 }
+          );
+        } else {
+          console.log("Skipping authentication in development mode");
         }
       }
     } catch (authError) {
@@ -67,31 +104,37 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Sanitize updates - remove fields that shouldn't be updatable
-    const {
-      id: updateId,
-      uid,
-      createdAt,
-      featured,
-      canEdit,
-      ...validUpdates
-    } = updates;
+    // Filter out fields that shouldn't be updatable by students
+    const sanitizedUpdates = { ...updates };
+    const restrictedFields = [
+      "featured",
+      "canEdit",
+      "uid",
+      "matricNumber",
+      "createdAt",
+      "level",
+    ];
 
-    // Update the document
-    await studentRef.update(validUpdates);
+    restrictedFields.forEach((field) => {
+      if (field in sanitizedUpdates) {
+        delete sanitizedUpdates[field];
+      }
+    });
 
-    // Get the updated document
-    const updatedDoc = await studentRef.get();
-    const updatedData = updatedDoc.data();
+    // Update student profile
+    await studentRef.update(sanitizedUpdates);
 
     return NextResponse.json({
-      id: updatedDoc.id,
-      ...updatedData,
+      success: true,
+      message: "Student profile updated successfully",
     });
   } catch (error: any) {
     console.error("Error updating student:", error);
     return NextResponse.json(
-      { error: error.message || "Error updating student" },
+      {
+        error: error.message || "Error updating student profile",
+        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+      },
       { status: 500 }
     );
   }

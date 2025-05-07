@@ -14,6 +14,7 @@ type AuthContextType = {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshToken: () => Promise<string | null>;
 };
 
 // Create context with default values
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signIn: async () => {},
   signOut: async () => {},
+  refreshToken: async () => null,
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -55,8 +57,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const refreshToken = async () => {
+    if (user) {
+      try {
+        const token = await user.getIdToken(true);
+        console.log("Token refreshed successfully");
+        return token;
+      } catch (error) {
+        console.error("Failed to refresh token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, loading, signIn, signOut, refreshToken }}
+    >
       {children}
     </AuthContext.Provider>
   );
