@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { FiEdit2, FiCamera, FiUser, FiX, FiSave } from "react-icons/fi";
 import AnimatedButton from "@/components/AnimatedButton";
+import { ensureHttps } from "@/utils/cloudinaryConfig";
 
 interface ProfileSectionProps {
   student: any;
@@ -32,6 +33,13 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
   handleChange,
   onSaveChanges, // Added missing prop
 }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+    console.error("Failed to load image");
+  };
+
   return (
     <>
       {/* Header/Cover Image */}
@@ -60,10 +68,16 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
                   {editedData.photoURL ? (
                     <>
                       <img
-                        src={editedData.photoURL}
+                        src={ensureHttps(editedData.photoURL)}
                         alt={editedData.fullName}
                         className="w-full h-full object-cover"
+                        onError={handleImageError}
                       />
+                      {imageError && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                          <FiUser className="w-16 h-16 text-gray-400" />
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <FiCamera className="w-8 h-8 text-white" />
                       </div>

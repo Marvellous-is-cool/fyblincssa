@@ -1,13 +1,5 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
-
-// Configure Cloudinary with your credentials
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-});
+import cloudinary, { ensureHttps } from "@/utils/cloudinaryConfig";
 
 // Use the new route segment config format instead of the deprecated export const config
 export const runtime = "nodejs";
@@ -109,7 +101,11 @@ export async function POST(request: Request) {
       readableStream.pipe(uploadStream);
     });
 
-    return NextResponse.json(uploadResponse);
+    // Ensure HTTPS URL is returned
+    return NextResponse.json({
+      url: ensureHttps((uploadResponse as any).secure_url),
+      public_id: (uploadResponse as any).public_id,
+    });
   } catch (error) {
     console.error("Error uploading image:", error);
     return NextResponse.json(
