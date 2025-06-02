@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
-import AnimatedButton from "@/components/AnimatedButton";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import EditProfileForm from "@/components/StudentDashboard/EditProfileForm";
+import AnimatedButton from "@/components/AnimatedButton";
 import {
   FiUser,
   FiEdit2,
@@ -24,9 +24,9 @@ import {
 import Link from "next/link";
 
 export default function StudentProfile() {
-  const { user, signOut, loading } = useAuth();
+  const { user, loading, refreshToken, signOut } = useAuth();
   const router = useRouter();
-  const [studentData, setStudentData] = useState<any>(null);
+  const [student, setStudent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<any>({});
@@ -41,44 +41,57 @@ export default function StudentProfile() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Redirect if not logged in
   useEffect(() => {
-    // Redirect if not logged in
     if (!loading && !user) {
-      router.push("/student/login");
-      return;
-    }
-
-    if (user) {
-      fetchStudentData();
+      router.push("/student/login?redirect=/student/profile");
     }
   }, [user, loading, router]);
 
+  // Fetch student data when user is available
+  useEffect(() => {
+    if (user) {
+      fetchStudentData();
+    }
+  }, [user]);
+
   const fetchStudentData = async () => {
+    if (!user) return;
+
     try {
       setIsLoading(true);
+      // Ensure we have a fresh token when making this request
+      const token = await refreshToken();
 
-      // Fetch the student's data from the API
-      const response = await fetch(`/api/students/user/${user?.uid}`);
+      const response = await fetch(`/api/students/user/${user.uid}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch student data: ${response.statusText}`);
+        throw new Error("Failed to fetch student data");
       }
 
       const data = await response.json();
-      setStudentData(data);
+      setStudent(data);
       setEditedData(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching student data:", error);
-      toast.error("Failed to load your profile data");
+      toast.error(error.message || "Failed to load profile");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleEditToggle = () => {
-    if (isEditing) {
-      // Cancel editing - reset to original data
-      setEditedData(studentData);
+  const handleEditToggle = async () => {
+    // When enabling edit mode, refresh the token first
+    if (!isEditing && user) {
+      try {
+        await refreshToken();
+      } catch (error) {
+        console.error("Failed to refresh token before editing:", error);
+        toast.error("Authentication error. Please log out and log in again.");
+        return;
+      }
     }
     setIsEditing(!isEditing);
   };
@@ -159,7 +172,7 @@ export default function StudentProfile() {
       }
 
       const updatedData = await response.json();
-      setStudentData(updatedData);
+      setStudent(updatedData);
       setIsEditing(false);
       toast.success("Profile updated successfully!");
     } catch (error: any) {
@@ -232,7 +245,7 @@ export default function StudentProfile() {
     );
   }
 
-  if (!studentData) {
+  if (!student) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
         <div className="text-center max-w-md">
@@ -266,7 +279,7 @@ export default function StudentProfile() {
   }
 
   // Check if student can't edit their profile (because they're featured)
-  const canEdit = studentData.canEdit !== false;
+  const canEdit = student.canEdit !== false;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -344,10 +357,10 @@ export default function StudentProfile() {
                     </div>
                   ) : (
                     <>
-                      {studentData.photoURL ? (
+                      {student.photoURL ? (
                         <img
-                          src={studentData.photoURL}
-                          alt={studentData.fullName}
+                          src={student.photoURL}
+                          alt={student.fullName}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -381,7 +394,7 @@ export default function StudentProfile() {
                 ) : (
                   <>
                     <h1 className="text-3xl font-bold text-gray-900">
-                      {studentData.fullName}
+                      {student.fullName}
                     </h1>
                   </>
                 )}
@@ -454,7 +467,7 @@ export default function StudentProfile() {
                     />
                   ) : (
                     <p className="text-gray-700">
-                      {studentData.bio || "No bio provided"}
+                      {student.bio || "No bio provided"}
                     </p>
                   )}
                 </div>
@@ -475,7 +488,7 @@ export default function StudentProfile() {
                     />
                   ) : (
                     <p className="text-gray-700 italic">
-                      "{studentData.quote || "No quote provided"}"
+                      "{student.quote || "No quote provided"}"
                     </p>
                   )}
                 </div>
@@ -496,7 +509,7 @@ export default function StudentProfile() {
                     />
                   ) : (
                     <p className="text-gray-700">
-                      {studentData.hobbies || "No hobbies provided"}
+                      {student.hobbies || "No hobbies provided"}
                     </p>
                   )}
                 </div>
@@ -512,9 +525,7 @@ export default function StudentProfile() {
                   <div className="space-y-3">
                     <div>
                       <p className="text-sm text-gray-500">Matric Number</p>
-                      <p className="text-gray-700">
-                        {studentData.matricNumber}
-                      </p>
+                      <p className="text-gray-700">{student.matricNumber}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
@@ -529,7 +540,7 @@ export default function StudentProfile() {
                         />
                       ) : (
                         <p className="text-gray-700">
-                          {studentData.email || "No email provided"}
+                          {student.email || "No email provided"}
                         </p>
                       )}
                     </div>
@@ -546,7 +557,7 @@ export default function StudentProfile() {
                         />
                       ) : (
                         <p className="text-gray-700">
-                          {studentData.phone || "No phone provided"}
+                          {student.phone || "No phone provided"}
                         </p>
                       )}
                     </div>
@@ -574,7 +585,7 @@ export default function StudentProfile() {
                         </select>
                       ) : (
                         <p className="text-gray-700">
-                          {studentData.partTrack || "Not specified"}
+                          {student.partTrack || "Not specified"}
                         </p>
                       )}
                     </div>
@@ -591,7 +602,7 @@ export default function StudentProfile() {
                         />
                       ) : (
                         <p className="text-gray-700">
-                          {studentData.favoriteCourse || "Not specified"}
+                          {student.favoriteCourse || "Not specified"}
                         </p>
                       )}
                     </div>

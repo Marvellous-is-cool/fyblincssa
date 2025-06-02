@@ -73,10 +73,26 @@ export default function EditProfileForm({
     try {
       setIsSubmitting(true);
 
-      // Get current Firebase ID token
-      const idToken = await user.getIdToken(true);
+      // Force a token refresh to ensure we have a valid token
+      // This is crucial for avoiding 401 errors
+      let idToken;
+      try {
+        idToken = await user.getIdToken(true);
+        console.log("Token refreshed successfully");
+      } catch (tokenError) {
+        console.error("Failed to refresh token:", tokenError);
+        toast.error("Authentication error. Please log out and log in again.");
+        return;
+      }
 
-      console.log("Submitting profile update...");
+      if (!idToken) {
+        toast.error(
+          "Failed to get authentication token. Please try logging in again."
+        );
+        return;
+      }
+
+      console.log("Submitting profile update with auth token...");
 
       const response = await fetch("/api/students/update", {
         method: "PUT",
@@ -90,9 +106,16 @@ export default function EditProfileForm({
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update profile");
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(
+            data.error ||
+              "Authentication error. Please log out and log in again."
+          );
+        }
+        throw new Error(data.error || "Failed to update profile");
       }
 
       toast.success("Profile updated successfully!");
