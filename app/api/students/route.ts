@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
+import { ensureHttps } from "@/utils/cloudinaryConfig";
 
 export async function GET() {
   try {
@@ -9,6 +10,7 @@ export async function GET() {
     const students = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
+      photoURL: doc.data().photoURL ? ensureHttps(doc.data().photoURL) : null,
     }));
 
     return NextResponse.json(students);

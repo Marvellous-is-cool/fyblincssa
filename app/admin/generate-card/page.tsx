@@ -20,6 +20,7 @@ import {
   FiImage,
 } from "react-icons/fi";
 import Link from "next/link";
+import { ensureHttps } from "@/utils/cloudinaryConfig";
 
 // Template options with proper type annotations
 const TEMPLATE_OPTIONS = [
@@ -266,6 +267,35 @@ export default function GenerateCardPage() {
       toast.error(
         "Card component not properly loaded. Please refresh the page."
       );
+    }
+  };
+
+  const loadImage = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+      img.src = ensureHttps(url);
+    });
+  };
+
+  const generateCard = async () => {
+    try {
+      // Ensure all image URLs are HTTPS
+      const securePhotoUrl = student?.photoURL
+        ? ensureHttps(student.photoURL)
+        : null;
+
+      // Pre-load image before starting card generation
+      if (securePhotoUrl) {
+        await loadImage(securePhotoUrl);
+      }
+
+      // Rest of your card generation code...
+    } catch (error) {
+      console.error("Error generating card:", error);
+      toast.error("Failed to generate card. Please try again.");
     }
   };
 
