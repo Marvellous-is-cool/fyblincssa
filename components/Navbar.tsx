@@ -23,6 +23,7 @@ export default function Navbar() {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Personality of the Week", path: "/personality" },
+    { name: "30 Days Challenge", path: "/challenge" },
     { name: "About LINCSSA", path: "/about" },
   ];
 

@@ -24,11 +24,11 @@ export default function VibrantTemplate({
     setMounted(true);
   }, []);
 
-  // Use the dominant colors or fallback to defaults
-  const primaryColor = colors[0] || "#7C4DFF";
-  const secondaryColor = colors[1] || "#FF4081";
-  const accentColor = colors[2] || "#1E3A8A";
-  const energyColor = colors[3] || "#ffa726";
+  // Use royal blue color scheme - flashy and vibrant
+  const primaryColor = "#0052CC"; // Royal blue
+  const secondaryColor = "#003D99"; // Darker royal blue
+  const accentColor = "#0066FF"; // Bright royal blue
+  const energyColor = "#4D79FF"; // Light royal blue
 
   // Logo error handler
   const handleLogoError = () => {
@@ -53,15 +53,18 @@ export default function VibrantTemplate({
     visible: { opacity: 1, y: 0 },
   };
 
-  // Create a vibrant gradient background
-  const gradientBg = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`;
+  // Create a more vibrant gradient background with three colors
+  const gradientBg = `linear-gradient(135deg, ${primaryColor}, ${secondaryColor}, ${lighten(
+    0.1,
+    accentColor
+  )})`;
 
-  // Bubble animation for background elements
+  // Bubble animation for background elements - more dynamic
   const bubbleAnimation = {
-    y: [0, -10, 0],
-    scale: [1, 1.05, 1],
+    y: [0, -15, 0],
+    scale: [1, 1.08, 1],
     transition: {
-      duration: 3,
+      duration: 4,
       repeat: Infinity,
       repeatType: "mirror" as const,
       ease: "easeInOut",
@@ -69,7 +72,28 @@ export default function VibrantTemplate({
   };
 
   return (
-    <div className="vibrant-template h-full w-full flex flex-col relative overflow-hidden">
+    <div
+      className="vibrant-template h-full w-full flex flex-col relative overflow-hidden"
+      style={{ aspectRatio: "0.5/1" }}
+    >
+      {/* Custom scrollbar style */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+      `}</style>
+
       {/* Gradient Background */}
       <div
         className="absolute inset-0"
@@ -80,16 +104,17 @@ export default function VibrantTemplate({
 
       {/* Vibrant Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Large Circles */}
+        {/* Large Circles - Increased brightness and size */}
         <motion.div
           animate={mounted ? bubbleAnimation : {}}
-          className="absolute -right-24 -top-24 w-64 h-64 rounded-full"
+          className="absolute -right-32 -top-32 w-96 h-96 rounded-full"
           style={{
             background: `radial-gradient(circle at 30% 30%, ${transparentize(
-              0.3,
-              secondaryColor
-            )}, ${transparentize(1, secondaryColor)})`,
-            filter: "blur(30px)",
+              0.1, // Even less transparency for more vibrant color
+              primaryColor
+            )}, ${transparentize(1, primaryColor)})`,
+            filter: "blur(15px)", // Less blur for sharper appearance
+            mixBlendMode: "screen", // Add blend mode for more vibrant appearance
           }}
         />
 
@@ -102,13 +127,14 @@ export default function VibrantTemplate({
                 }
               : {}
           }
-          className="absolute -left-32 top-1/4 w-80 h-80 rounded-full"
+          className="absolute -left-40 top-1/4 w-96 h-96 rounded-full"
           style={{
             background: `radial-gradient(circle at 70% 70%, ${transparentize(
-              0.4,
-              energyColor
-            )}, ${transparentize(1, energyColor)})`,
-            filter: "blur(40px)",
+              0.2, // Less transparency
+              accentColor
+            )}, ${transparentize(1, accentColor)})`,
+            filter: "blur(20px)", // Less blur
+            mixBlendMode: "screen", // More vibrant appearance
           }}
         />
 
@@ -121,13 +147,14 @@ export default function VibrantTemplate({
                 }
               : {}
           }
-          className="absolute right-20 bottom-32 w-96 h-96 rounded-full"
+          className="absolute right-20 bottom-32 w-[500px] h-[500px] rounded-full"
           style={{
             background: `radial-gradient(circle at 30% 30%, ${transparentize(
-              0.6,
-              accentColor
-            )}, ${transparentize(1, accentColor)})`,
-            filter: "blur(60px)",
+              0.3, // Less transparency
+              energyColor
+            )}, ${transparentize(1, energyColor)})`,
+            filter: "blur(25px)", // Less blur
+            mixBlendMode: "screen", // More vibrant appearance
           }}
         />
 
@@ -160,9 +187,9 @@ export default function VibrantTemplate({
       {branding && (
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.div
-            className="w-[80%] h-[80%] opacity-5"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 0.05, scale: 1 }}
+            className="w-[100%] h-[100%] opacity-0"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 0.07, scale: 1.05 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
           >
             <img
@@ -174,7 +201,7 @@ export default function VibrantTemplate({
             />
             {logoError && (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="text-[20rem] font-bold text-white opacity-10">
+                <span className="text-[40rem] font-bold text-white opacity-10">
                   L
                 </span>
               </div>
@@ -185,29 +212,31 @@ export default function VibrantTemplate({
 
       {/* Content */}
       <motion.div
-        className="relative z-10 flex flex-col h-full w-full px-12 py-14"
+        className="relative z-10 flex flex-col h-full w-full px-2 py-0"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Header */}
         <motion.div
-          className="flex justify-between items-center mb-8"
+          className="flex justify-between items-center mb-0"
           variants={itemVariants}
         >
-          <div className="bg-white/20 backdrop-blur-md rounded-full px-6 py-2.5 shadow-lg">
-            <p className="text-white font-medium tracking-wider text-lg">
+          <div className="mt-12 mb-12 bg-white/20 backdrop-blur-md rounded-full px-3 py-3 shadow-lg">
+            <p className="text-white font-bold tracking-wider text-xl">
               PERSONALITY OF THE DAY
             </p>
           </div>
 
           {branding && (
             <div className="flex items-center gap-3">
-              <div className="bg-white/20 backdrop-blur-md rounded-full px-4 py-1 shadow-lg">
-                <p className="text-white text-sm">LINCSSA</p>
+              <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 shadow-lg">
+                <p className="text-white text-lg font-bold">
+                  LINCSSA Phonix'25🙃
+                </p>
               </div>
 
-              <div className="bg-white rounded-full p-1.5 shadow-lg h-10 w-10 flex items-center justify-center">
+              <div className="bg-white rounded-full p-1 shadow-lg h-16 w-16 flex items-center justify-center">
                 <img
                   src={logoUrl}
                   alt="Logo"
@@ -218,7 +247,7 @@ export default function VibrantTemplate({
                 {logoError && (
                   <div className="w-full h-full flex items-center justify-center">
                     <span
-                      className="text-sm font-bold"
+                      className="text-base font-bold"
                       style={{ color: primaryColor }}
                     >
                       L
@@ -230,92 +259,40 @@ export default function VibrantTemplate({
           )}
         </motion.div>
 
-        {/* Student Name */}
-        <motion.div variants={itemVariants} className="mb-10">
-          <h1 className="text-white text-7xl font-black leading-none mb-4 drop-shadow-lg">
-            {student?.fullName || "Student Name"}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-3 mb-2">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/30 backdrop-blur-md rounded-full px-4 py-1 shadow-lg inline-block"
-            >
-              <p className="text-white text-sm font-medium">
-                {student?.birthMonth && student?.birthDay
-                  ? `${student.birthMonth} ${student.birthDay}`
-                  : "Birth Month & Day"}
-              </p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-white/30 backdrop-blur-md rounded-full px-4 py-1 shadow-lg inline-block"
-            >
-              <p className="text-white text-sm font-medium">
-                {student?.relationshipStatus || "Relationship Status"}
-              </p>
-            </motion.div>
-
-            {student?.specializationTrack && (
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="bg-white/30 backdrop-blur-md rounded-full px-4 py-1 shadow-lg inline-block"
-              >
-                <p className="text-white text-sm font-medium">
-                  {student.specializationTrack}
-                </p>
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
-
         {/* Main content with photo and details */}
-        <div className="flex flex-1 gap-8">
+        <div className="flex flex-1 gap-2 h-[calc(100%-24px)] overflow-hidden">
           {/* Left column with dynamic photo frame */}
-          <motion.div variants={itemVariants} className="w-[45%]">
-            {/* Matric number and other details */}
-            {student?.matricNumber && (
-              <motion.div
-                variants={itemVariants}
-                className="mb-4 flex justify-center"
-              >
-                <div className="bg-white/20 backdrop-blur-md rounded-full px-6 py-2 shadow-lg">
-                  <p className="text-white text-sm font-medium">
-                    {student.matricNumber}
-                  </p>
-                </div>
-              </motion.div>
-            )}
-
+          <motion.div variants={itemVariants} className="w-[35%] flex flex-col">
             {/* Social Connect - Now above the profile image */}
             {student?.socials && (
               <motion.div
                 variants={itemVariants}
-                className="mb-6 bg-white/10 backdrop-blur-md rounded-2xl p-4 shadow-lg"
+                className="mb-3 bg-white/15 backdrop-blur-md rounded-xl p-2 shadow-lg"
               >
-                <h3 className="text-white/80 text-sm font-medium mb-2">
+                <h3 className="text-white/90 text-xl font-bold mb-1">
                   Connect With Me
                 </h3>
-                <p className="text-white text-sm">{student.socials}</p>
+                <p className="text-white text-base font-medium">
+                  {student.socials}
+                </p>
               </motion.div>
             )}
 
-            {/* Profile Image - Fixed display issues */}
+            {/* Profile Image - Adjusted aspect ratio */}
             <motion.div
-              className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[3/4]"
-              whileHover={{ scale: 1.03 }}
+              className="relative rounded-2xl overflow-hidden shadow-xl aspect-[1/1.9]"
+              whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               {/* Colorful photo frame border */}
-              <div className="absolute inset-0 p-3 bg-gradient-to-br from-transparent via-white/20 to-white/40 backdrop-blur-md">
-                <div className="w-full h-full rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 p-2 bg-gradient-to-br from-transparent via-white/20 to-white/40 backdrop-blur-md">
+                <div className="w-full h-full rounded-xl overflow-hidden">
                   {student?.photoURL ? (
                     <img
                       src={student.photoURL}
                       alt={student.fullName}
                       className="w-full h-full object-cover"
-                      style={{ objectPosition: "center top" }}
+                      style={{ objectPosition: "left top" }}
                     />
                   ) : (
                     <div
@@ -327,7 +304,7 @@ export default function VibrantTemplate({
                         )}, ${transparentize(0.7, secondaryColor)})`,
                       }}
                     >
-                      <span className="text-[8rem] font-bold text-white">
+                      <span className="text-[12rem] font-bold text-white">
                         {student?.fullName?.[0]?.toUpperCase() || "?"}
                       </span>
                     </div>
@@ -335,17 +312,69 @@ export default function VibrantTemplate({
                 </div>
               </div>
             </motion.div>
+
+            {/* Student Name and details below photo */}
+            <motion.div variants={itemVariants} className="mt-1">
+              <h1 className="text-white text-3xl sm:text-4xl font-black leading-tight mb-1 drop-shadow-lg">
+                {student?.fullName || "Student Name"}
+              </h1>
+
+              <div className="flex flex-wrap items-center gap-0.5 mb-1">
+                {(student?.birthMonth || student?.birthDay) && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-white/30 backdrop-blur-md rounded-full px-2 py-0 shadow-lg inline-block"
+                  >
+                    <p className="text-white text-sm font-semibold">
+                      {student?.birthMonth && student?.birthDay
+                        ? `${student.birthMonth} ${student.birthDay}`
+                        : student?.birthMonth || "Birth Month & Day"}
+                    </p>
+                  </motion.div>
+                )}
+
+                {student?.relationshipStatus && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-white/30 backdrop-blur-md rounded-full px-2 py-0 shadow-lg inline-block"
+                  >
+                    <p className="text-white text-sm font-semibold">
+                      {student.relationshipStatus}
+                    </p>
+                  </motion.div>
+                )}
+
+                {student?.specializationTrack && (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="bg-white/30 backdrop-blur-md rounded-full px-2 py-0 shadow-lg inline-block"
+                  >
+                    <p className="text-white text-sm font-semibold">
+                      {student.specializationTrack}
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
 
           {/* Right column with details */}
-          <div className="w-[55%] flex flex-col">
+          <div className="w-[65%] flex flex-col max-h-full overflow-y-auto pr-1 custom-scrollbar">
             {/* Quote in a vibrant styled box */}
             {student?.quote && (
               <motion.div
                 variants={itemVariants}
-                className="mb-6 bg-white/15 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/20"
+                className="mb-6 bg-white/20 backdrop-blur-md rounded-2xl p-4 shadow-lg"
+                style={{
+                  border: `1px solid rgba(255,255,255,0.3)`,
+                  background: `linear-gradient(135deg, ${transparentize(
+                    0.85,
+                    primaryColor
+                  )}, ${transparentize(0.85, secondaryColor)})`,
+                  boxShadow: `0 8px 20px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.3)`,
+                }}
               >
-                <p className="text-white text-xl italic leading-relaxed">
+                <p className="text-white text-xl italic font-xl leading-tight">
                   "{student.quote}"
                 </p>
               </motion.div>
@@ -355,91 +384,99 @@ export default function VibrantTemplate({
             {student?.bio && (
               <motion.div
                 variants={itemVariants}
-                className="mb-6 bg-white/15 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/20"
+                className="mb-3 bg-white/15 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/20"
               >
-                <h3 className="text-white text-lg font-bold mb-3 flex items-center gap-2">
+                <h3 className="text-white text-xl font-bold mb-0 flex items-center gap-0.5">
                   <div
                     className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: energyColor }}
                   ></div>
                   About Me
                 </h3>
-                <p className="text-white/90 leading-relaxed">{student.bio}</p>
+                <p className="text-white/90 text-xl font-medium leading-snug">
+                  {student.bio}
+                </p>
               </motion.div>
             )}
 
-            {/* Details grid with vibrant cards */}
+            {/* Details grid with vibrant cards - optimized for mobile */}
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-0.5"
             >
               {/* Hobbies */}
               {student?.hobbies && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -3 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: secondaryColor }}
                     ></div>
                     Hobbies & Interests
                   </h3>
-                  <p className="text-white text-sm">{student.hobbies}</p>
+                  <p className="text-white text-lg font-medium">
+                    {student.hobbies}
+                  </p>
                 </motion.div>
               )}
 
               {/* Favorite Course */}
               {student?.favoriteCourse && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: primaryColor }}
                     ></div>
                     Favorite Course
                   </h3>
-                  <p className="text-white text-sm">{student.favoriteCourse}</p>
+                  <p className="text-white text-lg font-medium">
+                    {student.favoriteCourse}
+                  </p>
                 </motion.div>
               )}
 
               {/* Shege Course */}
               {student?.shegeCourse && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: primaryColor }}
                     ></div>
                     Shege Course
                   </h3>
-                  <p className="text-white text-sm">{student.shegeCourse}</p>
+                  <p className="text-white text-lg font-medium">
+                    {student.shegeCourse}
+                  </p>
                 </motion.div>
               )}
 
               {/* Best Moment */}
               {student?.bestMoment && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: energyColor }}
                     ></div>
                     Best Moment
                   </h3>
-                  <p className="text-white text-sm">
-                    {student.bestMoment.length > 100
-                      ? student.bestMoment.substring(0, 100) + "..."
+                  <p className="text-white text-lg font-medium">
+                    {student.bestMoment.length > 90
+                      ? student.bestMoment.substring(0, 90) + "..."
                       : student.bestMoment}
                   </p>
                 </motion.div>
@@ -448,19 +485,19 @@ export default function VibrantTemplate({
               {/* Worst Moment */}
               {student?.worstMoment && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="bg-white/20 backdrop-blur-md rounded-xl p-5 mb-3 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: energyColor }}
                     ></div>
                     Worst Moment
                   </h3>
-                  <p className="text-white text-sm">
-                    {student.worstMoment.length > 100
-                      ? student.worstMoment.substring(0, 100) + "..."
+                  <p className="text-white text-lg font-medium">
+                    {student.worstMoment.length > 90
+                      ? student.worstMoment.substring(0, 90) + "..."
                       : student.worstMoment}
                   </p>
                 </motion.div>
@@ -469,17 +506,17 @@ export default function VibrantTemplate({
               {/* Favorite Lecturer */}
               {student?.favoriteLecturer && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: accentColor }}
                     ></div>
                     Favorite Lecturer
                   </h3>
-                  <p className="text-white text-sm">
+                  <p className="text-white text-lg font-medium">
                     {student.favoriteLecturer}
                   </p>
                 </motion.div>
@@ -488,34 +525,38 @@ export default function VibrantTemplate({
               {/* Favorite Level */}
               {student?.favoriteLevel && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: accentColor }}
                     ></div>
                     Favorite Level
                   </h3>
-                  <p className="text-white text-sm">{student.favoriteLevel}</p>
+                  <p className="text-white text-lg font-medium">
+                    {student.favoriteLevel}
+                  </p>
                 </motion.div>
               )}
 
               {/* Shege Level */}
               {student?.shegeLevel && (
                 <motion.div
-                  whileHover={{ y: -5 }}
-                  className="bg-white/15 backdrop-blur-md rounded-2xl p-4 shadow-lg border border-white/20"
+                  whileHover={{ y: -2 }}
+                  className="mb-3 bg-white/20 backdrop-blur-md rounded-xl p-5 shadow-lg border border-white/30"
                 >
-                  <h3 className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
+                  <h3 className="text-white/90 text-xl font-semibold mb-1 flex items-center gap-0.5">
                     <div
-                      className="w-2 h-2 rounded-full"
+                      className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: accentColor }}
                     ></div>
-                    shege Level
+                    Shege Level
                   </h3>
-                  <p className="text-white text-sm">{student.shegeLevel}</p>
+                  <p className="text-white text-lg font-medium">
+                    {student.shegeLevel}
+                  </p>
                 </motion.div>
               )}
             </motion.div>
@@ -524,26 +565,47 @@ export default function VibrantTemplate({
             {student?.advice && (
               <motion.div
                 variants={itemVariants}
-                className="mt-6 bg-white/25 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/30"
+                className="mt-4 bg-white/30 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/40"
+                style={{
+                  background: `linear-gradient(135deg, ${transparentize(
+                    0.8,
+                    primaryColor
+                  )}, ${transparentize(0.7, accentColor)})`,
+                }}
               >
-                <h3 className="text-white text-lg font-bold mb-3">
+                <h3 className="text-white text-xl font-bold mb-1 flex items-center gap-0.5">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: energyColor }}
+                  ></div>
                   Advice for Juniors
                 </h3>
-                <p className="text-white leading-relaxed italic">
+                <p className="text-white text-xl font-medium leading-snug italic">
                   "{student.advice}"
                 </p>
               </motion.div>
             )}
+
             {/* If not Linguistics - highlight box */}
             {student?.ifNotLinguistics && (
               <motion.div
                 variants={itemVariants}
-                className="mt-6 bg-white/25 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/30"
+                className="mt-4 bg-white/30 backdrop-blur-md rounded-2xl p-5 shadow-lg border border-white/40 mb-0"
+                style={{
+                  background: `linear-gradient(135deg, ${transparentize(
+                    0.8,
+                    secondaryColor
+                  )}, ${transparentize(0.7, energyColor)})`,
+                }}
               >
-                <h3 className="text-white text-lg font-bold mb-3">
+                <h3 className="text-white text-xl font-bold mb-1 flex items-center gap-0.5">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: secondaryColor }}
+                  ></div>
                   If not Linguistics
                 </h3>
-                <p className="text-white leading-relaxed italic">
+                <p className="text-white text-lg font-medium leading-snug">
                   {student.ifNotLinguistics}
                 </p>
               </motion.div>
@@ -554,11 +616,12 @@ export default function VibrantTemplate({
         {/* Footer */}
         <motion.div
           variants={itemVariants}
-          className="mt-8 flex justify-between items-center"
+          className="flex justify-between items-center mt-0"
         >
           {/* Date */}
-          <div className="bg-white/20 backdrop-blur-md rounded-full px-4 py-2 shadow-lg">
-            <p className="text-white text-sm">
+          <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 shadow-lg">
+            {" "}
+            <p className="text-white text-sm font-medium">
               {new Date().toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -569,8 +632,8 @@ export default function VibrantTemplate({
 
           {/* LINCSSA Branding */}
           {branding && (
-            <div className="bg-white/20 backdrop-blur-md rounded-full px-4 py-2 shadow-lg">
-              <p className="text-white text-sm">
+            <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 shadow-lg">
+              <p className="text-white text-sm font-medium">
                 LINGUISTICS & COMMUNICATIONS STUDENTS' ASSOCIATION
               </p>
             </div>

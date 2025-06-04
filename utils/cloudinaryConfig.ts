@@ -1,24 +1,12 @@
-import { v2 as cloudinary } from "cloudinary";
+import { Cloudinary } from "@cloudinary/url-gen";
 
-// Add type definitions for Cloudinary options
-interface CloudinaryTransformationOptions {
-  width?: number;
-  height?: number;
-  crop?: string;
-  fetch_format?: string;
-  quality?: string | number;
-}
-
-interface CloudinaryOptions {
-  secure?: boolean;
-  transformation?: CloudinaryTransformationOptions[];
-}
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
+const cld = new Cloudinary({
+  cloud: {
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  },
+  url: {
+    secure: true,
+  },
 });
 
 export const ensureHttps = (url: string) => {
@@ -42,19 +30,8 @@ export const ensureHttps = (url: string) => {
   return url;
 };
 
-export const getSecureImageUrl = (
-  publicId: string,
-  options: CloudinaryOptions = {}
-) => {
-  return cloudinary.url(publicId, {
-    secure: true,
-    ...options,
-    transformation: [
-      { fetch_format: "auto" },
-      { quality: "auto" },
-      ...(options.transformation || []),
-    ],
-  });
+export const getCloudinaryUrl = (publicId: string) => {
+  return cld.image(publicId).toURL();
 };
 
-export default cloudinary;
+export default cld;

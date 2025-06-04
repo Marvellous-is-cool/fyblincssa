@@ -175,18 +175,13 @@ export default function PremiumTemplate({
                 className="text-xl uppercase tracking-widest"
                 style={{ color: goldColor }}
               >
-                Personality of the Week
+                FYB of the day
               </h2>
-              <p className="text-sm text-gray-300">
-                {new Date().toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                })}
-              </p>
+              <p className="text-lg text-gray-300">meet...</p>
             </div>
             {branding && (
               <div
-                className="h-12 w-12 rounded-full bg-black/20 backdrop-blur-lg p-2 flex items-center justify-center"
+                className="h-14 w-14 rounded-full bg-black/20 backdrop-blur-lg p-2 flex items-center justify-center"
                 style={{ border: `1px solid ${goldColor}` }}
               >
                 <img
@@ -395,12 +390,10 @@ export default function PremiumTemplate({
                 student?.ifNotLinguistics
               )}
             </motion.div>
-
-            {/* Student advice or parting words */}
             {student?.advice && (
               <motion.div
                 variants={itemVariants}
-                className="mt-auto pt-6 border-t border-white/10"
+                className="border-t border-white/10"
               >
                 <p
                   className="text-lg italic leading-relaxed"
@@ -410,6 +403,8 @@ export default function PremiumTemplate({
                 </p>
               </motion.div>
             )}
+
+            {/* Student advice or parting words */}
           </div>
         </div>
 

@@ -325,7 +325,7 @@ export default function Home() {
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="max-w-3xl mx-auto"
+            className="max-w-4xl mx-auto"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
               Ready to Shine?
@@ -335,15 +335,28 @@ export default function Home() {
               as our next Personality of the Week!
             </p>
 
-            <AnimatedButton
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              variant="secondary"
-              size="lg"
-              icon={<FiArrowRight />}
-              iconPosition="right"
-            >
-              Enter Your Matric Number
-            </AnimatedButton>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <AnimatedButton
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                variant="secondary"
+                size="lg"
+                icon={<FiArrowRight />}
+                iconPosition="right"
+              >
+                Enter Your Matric Number
+              </AnimatedButton>
+
+              <AnimatedButton
+                onClick={() => router.push("/challenge")}
+                variant="outline"
+                size="lg"
+                icon={<FiStar />}
+                iconPosition="left"
+                className="border-white text-white hover:bg-white hover:text-lincssa-blue"
+              >
+                30 Days Challenge
+              </AnimatedButton>
+            </div>
           </motion.div>
         </div>
       </section>

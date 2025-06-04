@@ -1,5 +1,13 @@
+import { v2 as cloudinaryServer } from "cloudinary";
 import { NextResponse } from "next/server";
-import cloudinary, { ensureHttps } from "@/utils/cloudinaryConfig";
+
+// Configure Cloudinary with environment variables
+cloudinaryServer.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 // Use the new route segment config format instead of the deprecated export const config
 export const runtime = "nodejs";
@@ -76,16 +84,11 @@ export async function POST(request: Request) {
     // Handle Upload - rely on Cloudinary's built-in optimization when Sharp isn't available
     const uploadResponse = await new Promise((resolve, reject) => {
       // Create upload stream using buffer
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const uploadStream = cloudinaryServer.uploader.upload_stream(
         {
           folder: "fyb_students",
-          resource_type: "image",
-          // Add transformations to optimize on Cloudinary
-          transformation: [
-            { width: 800, crop: "limit" },
-            { quality: "auto:good" },
-            { fetch_format: "auto" },
-          ],
+          resource_type: "auto",
+          secure: true,
         },
         (error, result) => {
           if (error) return reject(error);
@@ -103,7 +106,7 @@ export async function POST(request: Request) {
 
     // Ensure HTTPS URL is returned
     return NextResponse.json({
-      url: ensureHttps((uploadResponse as any).secure_url),
+      url: (uploadResponse as any).secure_url,
       public_id: (uploadResponse as any).public_id,
     });
   } catch (error) {
