@@ -155,10 +155,29 @@ export default function StudentProfile() {
         return;
       }
 
+      // Get fresh authentication token
+      let idToken;
+      try {
+        idToken = await user?.getIdToken(true);
+        console.log("Token refreshed successfully for profile update");
+      } catch (tokenError) {
+        console.error("Failed to refresh token:", tokenError);
+        toast.error("Authentication error. Please log out and log in again.");
+        return;
+      }
+
+      if (!idToken) {
+        toast.error(
+          "Failed to get authentication token. Please try logging in again."
+        );
+        return;
+      }
+
       const response = await fetch(`/api/students/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           id: editedData.id,
@@ -172,7 +191,7 @@ export default function StudentProfile() {
       }
 
       const updatedData = await response.json();
-      setStudent(updatedData);
+      setStudent(updatedData.data || updatedData);
       setIsEditing(false);
       toast.success("Profile updated successfully!");
     } catch (error: any) {
@@ -387,7 +406,7 @@ export default function StudentProfile() {
                       name="fullName"
                       value={editedData.fullName}
                       onChange={handleChange}
-                      className="text-2xl font-bold text-gray-900 w-full border-b-2 border-gray-200 focus:border-primary px-2 py-1 outline-none text-black"
+                      className="text-2xl font-bold text-gray-900 w-full border-b-2 border-gray-200 focus:border-primary px-2 py-1 outline-none"
                       placeholder="Your Name"
                     />
                   </div>

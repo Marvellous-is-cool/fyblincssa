@@ -306,24 +306,6 @@ export default function PremiumTemplate({
                   Relationship Status: {student?.relationshipStatus || "Status"}
                 </span>
               </motion.div>
-
-              {student?.matricNumber && (
-                <motion.div
-                  variants={itemVariants}
-                  className="flex items-center gap-3 mt-4"
-                >
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center"
-                    style={{
-                      background: goldGradient,
-                      boxShadow: `0 0 10px ${subtleGold}`,
-                    }}
-                  >
-                    <span className="text-xs">#</span>
-                  </div>
-                  <span className="text-gray-300">{student.matricNumber}</span>
-                </motion.div>
-              )}
             </div>
           </motion.div>
 
@@ -378,6 +360,9 @@ export default function PremiumTemplate({
               {renderDetailItem("Hobbies & Interests", student?.hobbies)}
               {renderDetailItem("Favorite Course(s)", student?.favoriteCourse)}
               {renderDetailItem("Shege Course(s)", student?.shegeCourse)}
+              {renderDetailItem("Favorite Lecturer", student?.favoriteLecturer)}
+              {renderDetailItem("Favorite Level", student?.favoriteLevel)}
+              {renderDetailItem("Shege Level", student?.shegeLevel)}
               {renderDetailItem("Social(s)", student?.socials)}
               {renderDetailItem("Best Moment", student?.bestMoment)}
               {renderDetailItem("Worst Moment", student?.worstMoment)}

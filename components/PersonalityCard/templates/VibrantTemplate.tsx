@@ -229,8 +229,8 @@ export default function VibrantTemplate({
           </div>
 
           {branding && (
-            <div className="flex items-center gap-3">
-              <div className="bg-white/20 backdrop-blur-md rounded-full px-3 py-1 shadow-lg">
+            <div className="flex items-center gap-5">
+              <div className="bg-white/20 backdrop-blur-md rounded-full px-5 py-2 shadow-lg">
                 <p className="text-white text-lg font-bold">
                   LINCSSA Phonix'25🙃
                 </p>

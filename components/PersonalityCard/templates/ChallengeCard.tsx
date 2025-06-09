@@ -144,7 +144,7 @@ export default function ChallengeCard({
   return (
     <div
       className={`challenge-card flex flex-col relative overflow-hidden ${
-        isIntroCard ? "w-full h-auto" : "h-full w-full"
+        isIntroCard ? "w-auto h-auto" : "h-full w-full"
       }`}
       style={{
         background: `linear-gradient(to bottom, ${darkBackground}, ${darken(
@@ -152,7 +152,13 @@ export default function ChallengeCard({
           primaryColor
         )})`,
         color: "#FFFFFF",
-        aspectRatio: isIntroCard ? "1.4/1" : "0.5/1",
+        ...(isIntroCard
+          ? {
+              minWidth: "fit-content",
+              minHeight: "fit-content",
+              maxWidth: "800px",
+            }
+          : { aspectRatio: "0.5/1" }),
       }}
     >
       {/* Gold accents and patterns */}
@@ -239,7 +245,10 @@ export default function ChallengeCard({
         animate="visible"
       >
         {/* Header with gold accent */}
-        <motion.div className="mb-8" variants={itemVariants}>
+        <motion.div
+          className={isIntroCard ? "mb-4" : "mb-8"}
+          variants={itemVariants}
+        >
           <div
             className="w-40 h-1 mb-3"
             style={{ background: goldGradient }}
@@ -284,7 +293,12 @@ export default function ChallengeCard({
         </motion.div>
 
         {/* Day number with premium styling */}
-        <motion.div variants={itemVariants} className="mb-6 flex items-center">
+        <motion.div
+          variants={itemVariants}
+          className={
+            isIntroCard ? "mb-3 flex items-center" : "mb-6 flex items-center"
+          }
+        >
           <div
             className="w-20 h-20 rounded-full flex items-center justify-center mr-6"
             style={{
@@ -319,7 +333,7 @@ export default function ChallengeCard({
         >
           {day === 0 ? (
             /* Intro card with all 30 challenges in grid format */
-            <div className="w-full px-4">
+            <div className="w-full px-2">
               {/* All challenges grid - 5 columns with responsive sizing */}
               <div className="grid grid-cols-5 gap-1 text-left">
                 {challengeData.slice(1).map((challengeItem) => (
@@ -407,7 +421,9 @@ export default function ChallengeCard({
         {/* Footer with premium styling */}
         <motion.div
           variants={itemVariants}
-          className="flex justify-between items-center mt-auto pt-4 border-t border-white/10"
+          className={`flex justify-between items-center border-t border-white/10 ${
+            isIntroCard ? "mt-2 pt-2" : "mt-auto pt-4"
+          }`}
         >
           <div className="text-sm text-gray-400">
             {new Date().getFullYear()} © LINCSSA

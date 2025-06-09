@@ -26,10 +26,17 @@ export default function ChallengePage() {
       const isIntroCard = selectedDay === 0;
       const dataUrl = await toPng(cardRef.current, {
         backgroundColor: "transparent",
-        pixelRatio: 3,
+        pixelRatio: 2, // Reduced to avoid excessive size
         quality: 0.95,
         cacheBust: true,
         fontEmbedCSS: "true",
+        style: isIntroCard
+          ? {
+              display: "inline-block",
+              width: "auto",
+              height: "auto",
+            }
+          : undefined,
         // Let the card determine its own size for intro card
         ...(isIntroCard
           ? {}
@@ -139,20 +146,9 @@ export default function ChallengePage() {
 
         {/* Card preview */}
         <div className="flex justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className={
-              selectedDay === 0
-                ? "shadow-2xl rounded-lg overflow-hidden"
-                : "w-96 h-[768px] shadow-2xl rounded-lg overflow-hidden"
-            }
-          >
-            <div
-              ref={cardRef}
-              className={selectedDay === 0 ? "inline-block" : "w-full h-full"}
-            >
+          {selectedDay === 0 ? (
+            // For intro card, minimal wrapper - ref directly on card container
+            <div ref={cardRef} style={{ display: "inline-block" }}>
               <ChallengeCard
                 day={selectedDay}
                 challenge={challengeItem?.text || ""}
@@ -160,7 +156,24 @@ export default function ChallengePage() {
                 branding={true}
               />
             </div>
-          </motion.div>
+          ) : (
+            // For regular cards, keep existing structure
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-96 h-[768px] shadow-2xl rounded-lg overflow-hidden"
+            >
+              <div ref={cardRef} className="w-full h-full">
+                <ChallengeCard
+                  day={selectedDay}
+                  challenge={challengeItem?.text || ""}
+                  logoUrl={logoUrl}
+                  branding={true}
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Instructions */}
