@@ -116,6 +116,12 @@ export default function StudentProfile() {
       setIsUploading(true);
 
       try {
+        // Get fresh auth token
+        const token = await user?.getIdToken(true);
+        if (!token) {
+          throw new Error("Authentication required");
+        }
+
         // Create form data for upload
         const formData = new FormData();
         formData.append("file", file);
@@ -123,11 +129,15 @@ export default function StudentProfile() {
         // Upload to Cloudinary through our API
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         });
 
         if (!uploadResponse.ok) {
-          throw new Error("Failed to upload image");
+          const errorData = await uploadResponse.json().catch(() => ({}));
+          throw new Error(errorData.error || "Failed to upload image");
         }
 
         const uploadData = await uploadResponse.json();
@@ -141,7 +151,11 @@ export default function StudentProfile() {
         toast.success("Photo uploaded successfully!");
       } catch (error) {
         console.error("Error uploading photo:", error);
-        toast.error("Failed to upload photo");
+        toast.error(
+          `Failed to upload photo: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        );
       } finally {
         setIsUploading(false);
       }

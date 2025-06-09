@@ -4,9 +4,19 @@ import { NextResponse } from "next/server";
 // Configure Cloudinary with environment variables
 cloudinaryServer.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
+  api_key:
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+    process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
+});
+
+console.log("Cloudinary config loaded:", {
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key_exists: !!(
+    process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || process.env.CLOUDINARY_API_KEY
+  ),
+  api_secret_exists: !!process.env.CLOUDINARY_API_SECRET,
 });
 
 // Use the new route segment config format instead of the deprecated export const config
@@ -25,11 +35,70 @@ try {
 
 export async function POST(request: Request) {
   try {
+    // Check authentication (optional but recommended)
+    const authHeader = request.headers.get("authorization");
+    if (
+      process.env.NODE_ENV === "production" &&
+      !authHeader?.startsWith("Bearer ")
+    ) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    // Check if Cloudinary is properly configured
+    if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) {
+      console.error("Cloudinary cloud_name not configured");
+      return NextResponse.json(
+        { error: "Image upload service not configured" },
+        { status: 500 }
+      );
+    }
+
+    if (
+      !(
+        process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+        process.env.CLOUDINARY_API_KEY
+      )
+    ) {
+      console.error("Cloudinary API key not configured");
+      return NextResponse.json(
+        { error: "Image upload service not configured" },
+        { status: 500 }
+      );
+    }
+
+    if (!process.env.CLOUDINARY_API_SECRET) {
+      console.error("Cloudinary API secret not configured");
+      return NextResponse.json(
+        { error: "Image upload service not configured" },
+        { status: 500 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        { error: "Only image files are allowed" },
+        { status: 400 }
+      );
+    }
+
+    // Validate file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: "File size too large. Maximum 10MB allowed." },
+        { status: 400 }
+      );
     }
 
     // Convert file to buffer
@@ -111,8 +180,28 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error uploading image:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      cloudinary_config: {
+        cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+        api_key_exists: !!(
+          process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY ||
+          process.env.CLOUDINARY_API_KEY
+        ),
+        api_secret_exists: !!process.env.CLOUDINARY_API_SECRET,
+      },
+    });
     return NextResponse.json(
-      { error: "Error uploading image" },
+      {
+        error: "Error uploading image",
+        details:
+          process.env.NODE_ENV === "development"
+            ? error instanceof Error
+              ? error.message
+              : String(error)
+            : undefined,
+      },
       { status: 500 }
     );
   }
