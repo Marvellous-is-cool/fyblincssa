@@ -16,7 +16,7 @@ export default function AdminLogin() {
   const [backgroundElements, setBackgroundElements] = useState<
     Array<{ id: number; x: number; y: number; scale: number }>
   >([]);
-  const { signIn } = useAuth();
+  const { signInAdmin } = useAuth();
   const router = useRouter();
 
   // Initialize background elements after component mounts to avoid SSR issues
@@ -36,13 +36,13 @@ export default function AdminLogin() {
     setIsLoading(true);
 
     try {
-      await signIn(email, password);
-      toast.success("Login successful!");
+      await signInAdmin(email, password);
+      toast.success("Admin login successful! 🎉");
       router.push("/admin/dashboard");
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Admin login error:", error);
       toast.error(
-        error.message || "Login failed. Please check your credentials."
+        error.message || "Login failed. Please check your credentials and admin privileges."
       );
     } finally {
       setIsLoading(false);
@@ -98,7 +98,7 @@ export default function AdminLogin() {
             Admin Portal
           </h1>
           <p className="text-gray-500 mt-2">
-            Sign in to manage Personality of the Week
+            Restricted access - Admin credentials required
           </p>
         </div>
 

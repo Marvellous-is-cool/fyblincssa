@@ -23,13 +23,15 @@ import {
   FiStar,
   FiDownload,
   FiList,
-  FiInfo,
   FiChevronDown,
   FiChevronUp,
   FiMenu,
   FiX,
   FiGrid,
   FiCamera,
+  FiTrash2,
+  FiAlertTriangle,
+  FiInfo,
 } from "react-icons/fi";
 import Link from "next/link";
 
@@ -56,6 +58,9 @@ export default function AdminDashboard() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { user, signOut } = useAuth();
   const router = useRouter();
 
@@ -232,6 +237,49 @@ export default function AdminDashboard() {
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleDeleteStudent = (student: Student) => {
+    setStudentToDelete(student);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteStudent = async () => {
+    if (!studentToDelete) return;
+
+    try {
+      setIsDeleting(true);
+
+      const response = await fetch(`/api/students/${studentToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete student");
+      }
+
+      // Remove student from local state
+      setStudents((prev) => prev.filter((s) => s.id !== studentToDelete.id));
+      setFilteredStudents((prev) =>
+        prev.filter((s) => s.id !== studentToDelete.id)
+      );
+
+      toast.success(
+        `${studentToDelete.fullName} has been deleted successfully`
+      );
+      setShowDeleteConfirm(false);
+      setStudentToDelete(null);
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      toast.error("Failed to delete student. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setStudentToDelete(null);
   };
 
   return (
@@ -500,6 +548,14 @@ export default function AdminDashboard() {
                                 Feature
                               </button>
                             )}
+                            <button
+                              onClick={() => handleDeleteStudent(student)}
+                              className="text-red-500 hover:text-red-600 transition p-1 flex items-center gap-1"
+                              title="Delete Student"
+                            >
+                              <FiTrash2 className="w-4 h-4" />
+                              Delete
+                            </button>
                           </div>
                         </td>
                       </motion.tr>
@@ -565,15 +621,25 @@ export default function AdminDashboard() {
                           View Details
                         </button>
 
-                        {!student.featured && (
+                        <div className="flex items-center gap-2">
+                          {!student.featured && (
+                            <button
+                              onClick={() => handleSetFeatured(student)}
+                              className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md flex items-center gap-1"
+                            >
+                              <FiStar className="w-3 h-3" />
+                              Feature
+                            </button>
+                          )}
+
                           <button
-                            onClick={() => handleSetFeatured(student)}
-                            className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md flex items-center gap-1"
+                            onClick={() => handleDeleteStudent(student)}
+                            className="text-xs bg-red-50 hover:bg-red-100 text-red-600 p-1.5 rounded-md transition-colors"
+                            title="Delete Student"
                           >
-                            <FiStar className="w-3 h-3" />
-                            Feature
+                            <FiTrash2 className="w-3 h-3" />
                           </button>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -744,6 +810,62 @@ export default function AdminDashboard() {
                     )}
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && studentToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            onClick={cancelDelete}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                  <FiAlertTriangle className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Confirm Deletion
+                </h3>
+              </div>
+
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">
+                  {studentToDelete.fullName}
+                </span>
+                ? This action cannot be undone.
+              </p>
+
+              <div className="flex justify-end gap-4">
+                <AnimatedButton
+                  onClick={cancelDelete}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </AnimatedButton>
+                <AnimatedButton
+                  onClick={confirmDeleteStudent}
+                  variant="secondary"
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                  isLoading={isDeleting}
+                >
+                  {isDeleting ? "Deleting..." : "Delete Student"}
+                </AnimatedButton>
               </div>
             </motion.div>
           </motion.div>
