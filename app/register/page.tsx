@@ -43,7 +43,7 @@ export default function Registration() {
     birthDay: "",
     relationshipStatus: "",
     socials: "",
-    partTract: "Linguistics", // "Linguistics", "Communication", "Both"
+    partTrack: "Linguistics", // "Linguistics", "Communication", "Both"
     favoriteLevel: "",
     shegeLevel: "",
     favoriteCourse: "",
@@ -423,8 +423,8 @@ export default function Registration() {
                 Which do you like more?
               </label>
               <select
-                name="specializationTrack"
-                value={formData.partTract}
+                name="partTrack"
+                value={formData.partTrack}
                 onChange={handleChange}
                 className="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all outline-none text-black"
               >

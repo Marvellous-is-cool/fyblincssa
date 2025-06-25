@@ -39,7 +39,7 @@ export default function EditProfileForm({
     socials: studentData?.socials || "",
     advice: studentData?.advice || "",
     ifNotLinguistics: studentData?.ifNotLinguistics || "",
-    partTract: studentData?.partTract || "",
+    partTrack: studentData?.partTrack || "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -298,17 +298,14 @@ export default function EditProfileForm({
               Specialization Track
             </label>
             <select
-              name="specializationTrack"
-              value={formData.specializationTrack}
+              name="partTrack"
+              value={formData.partTrack}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="">Select Track</option>
-              <option value="Linguistic Analysis">Linguistic Analysis</option>
-              <option value="Communication Studies">
-                Communication Studies
-              </option>
-              <option value="Language & Society">Language & Society</option>
+              <option value="Linguistics">Linguistics</option>
+              <option value="Communication">Communication</option>
               <option value="Both">Both</option>
             </select>
           </div>
