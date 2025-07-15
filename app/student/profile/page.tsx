@@ -82,14 +82,12 @@ export default function StudentProfile() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!loading && !user) {
       router.push("/student/login?redirect=/student/profile");
     }
   }, [user, loading, router]);
 
-  // Fetch student data when user is available
   useEffect(() => {
     if (user) {
       fetchStudentData();
@@ -98,20 +96,15 @@ export default function StudentProfile() {
 
   const fetchStudentData = async () => {
     if (!user) return;
-
     try {
       setIsLoading(true);
-      // Ensure we have a fresh token when making this request
       const token = await refreshToken();
-
       const response = await fetch(`/api/students/user/${user.uid}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-
       if (!response.ok) {
         throw new Error("Failed to fetch student data");
       }
-
       const data = await response.json();
       setStudent(data);
       setEditedData(data);
@@ -124,7 +117,6 @@ export default function StudentProfile() {
   };
 
   const handleEditToggle = async () => {
-    // When enabling edit mode, refresh the token first
     if (!isEditing && user) {
       try {
         await refreshToken();
@@ -157,17 +149,12 @@ export default function StudentProfile() {
       setIsUploading(true);
 
       try {
-        // Get fresh auth token
         const token = await user?.getIdToken(true);
         if (!token) {
           throw new Error("Authentication required");
         }
-
-        // Create form data for upload
         const formData = new FormData();
         formData.append("file", file);
-
-        // Upload to Cloudinary through our API
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
           headers: {
@@ -175,20 +162,15 @@ export default function StudentProfile() {
           },
           body: formData,
         });
-
         if (!uploadResponse.ok) {
           const errorData = await uploadResponse.json().catch(() => ({}));
           throw new Error(errorData.error || "Failed to upload image");
         }
-
         const uploadData = await uploadResponse.json();
-
-        // Update local state
         setEditedData((prev: any) => ({
           ...prev,
           photoURL: uploadData.url,
         }));
-
         toast.success("Photo uploaded successfully!");
       } catch (error) {
         console.error("Error uploading photo:", error);
@@ -209,8 +191,6 @@ export default function StudentProfile() {
         toast.error("Missing student ID");
         return;
       }
-
-      // Get fresh authentication token
       let idToken;
       try {
         idToken = await user?.getIdToken(true);
@@ -220,14 +200,12 @@ export default function StudentProfile() {
         toast.error("Authentication error. Please log out and log in again.");
         return;
       }
-
       if (!idToken) {
         toast.error(
           "Failed to get authentication token. Please try logging in again."
         );
         return;
       }
-
       const response = await fetch(`/api/students/update`, {
         method: "PUT",
         headers: {
@@ -239,17 +217,13 @@ export default function StudentProfile() {
           updates: editedData,
         }),
       });
-
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to update profile");
       }
-
       const updatedData = await response.json();
       setStudent(updatedData.data || updatedData);
       setIsEditing(false);
-
-      // Enhanced success feedback
       toast.success("🎉 Profile updated successfully!", {
         duration: 4000,
         style: {
@@ -268,17 +242,14 @@ export default function StudentProfile() {
 
   const handleChangePassword = async () => {
     try {
-      // Validate passwords
       if (passwordData.newPassword !== passwordData.confirmPassword) {
         toast.error("New passwords don't match");
         return;
       }
-
       if (passwordData.newPassword.length < 6) {
         toast.error("Password must be at least 6 characters");
         return;
       }
-
       const response = await fetch("/api/students/auth/change-password", {
         method: "POST",
         headers: {
@@ -289,12 +260,10 @@ export default function StudentProfile() {
           newPassword: passwordData.newPassword,
         }),
       });
-
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to change password");
       }
-
       toast.success("Password changed successfully!");
       setChangePasswordMode(false);
       setPasswordData({
@@ -319,7 +288,6 @@ export default function StudentProfile() {
     }
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -354,11 +322,9 @@ export default function StudentProfile() {
     },
   };
 
-  // Keyboard shortcuts for edit mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isEditing) {
-        // ESC key to cancel editing
         if (e.key === "Escape") {
           e.preventDefault();
           handleEditToggle();
@@ -370,23 +336,18 @@ export default function StudentProfile() {
             },
           });
         }
-
-        // Cmd+S (Mac) or Ctrl+S (Windows/Linux) to save
         if ((e.metaKey || e.ctrlKey) && e.key === "s") {
           e.preventDefault();
           handleSaveChanges();
         }
       }
     };
-
     document.addEventListener("keydown", handleKeyDown);
-
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isEditing, editedData]);
 
-  // Show unsaved changes indicator
   const hasUnsavedChanges =
     isEditing && JSON.stringify(editedData) !== JSON.stringify(student);
 
@@ -461,7 +422,6 @@ export default function StudentProfile() {
     );
   }
 
-  // Check if student can't edit their profile (because they're featured)
   const canEdit = student.canEdit !== false;
 
   return (
@@ -472,7 +432,6 @@ export default function StudentProfile() {
           : "bg-gradient-to-br from-slate-50 to-gray-100"
       }`}
     >
-      {/* Edit Mode Background Overlay */}
       <AnimatePresence>
         {isEditing && (
           <motion.div
@@ -483,7 +442,6 @@ export default function StudentProfile() {
           />
         )}
       </AnimatePresence>
-      {/* Navigation */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -516,13 +474,11 @@ export default function StudentProfile() {
         animate="visible"
         className="max-w-7xl mx-auto p-4 py-8"
       >
-        {/* Hero Profile Card */}
         <motion.div
           variants={cardVariants}
           whileHover="hover"
           className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 p-8 mb-8 shadow-2xl"
         >
-          {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <defs>
@@ -541,7 +497,6 @@ export default function StudentProfile() {
             </svg>
           </div>
 
-          {/* Edit Mode Indicator & Button */}
           {isEditing && (
             <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.8 }}
@@ -559,6 +514,7 @@ export default function StudentProfile() {
             </motion.div>
           )}
 
+          {/* --- MODIFIED EDIT BUTTON FOR MOBILE + DESKTOP --- */}
           {!isEditing && canEdit && (
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
@@ -570,10 +526,39 @@ export default function StudentProfile() {
               }}
               whileTap={{ scale: 0.95 }}
               onClick={handleEditToggle}
-              className="absolute top-6 right-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white p-4 rounded-full transition-all duration-300 shadow-lg hover:shadow-2xl border-2 border-white/30 backdrop-blur-md group"
+              className="
+                absolute
+                top-4
+                right-4
+                md:top-6 md:right-6
+                bg-gradient-to-r from-blue-500 to-purple-500
+                hover:from-blue-600 hover:to-purple-600
+                text-white
+                rounded-full
+                transition-all duration-300
+                shadow-lg hover:shadow-2xl
+                border-2 border-white/30
+                backdrop-blur-md
+                group
+                z-20
+                focus:outline-none focus:ring-4 focus:ring-blue-300
+                active:scale-90
+                flex items-center justify-center
+              "
+              style={{
+                width: "56px",
+                height: "56px",
+                minWidth: "56px",
+                minHeight: "56px",
+                padding: 0,
+                touchAction: "manipulation",
+              }}
               title="Edit Profile"
+              aria-label="Edit Profile"
+              tabIndex={0}
             >
-              <FiEdit2 className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+              <FiEdit2 className="w-7 h-7 md:w-6 md:h-6 group-hover:rotate-12 transition-transform duration-300" />
+              <span className="sr-only">Edit Profile</span>
             </motion.button>
           )}
 
